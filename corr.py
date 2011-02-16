@@ -13,24 +13,48 @@ import numpy as np
 import csv
 import pprint
 from matplotlib import rc
+from itertools import *
+from di import singleton, gsingleton
+from corlib import *
+
+mappings = []
 
 
+def uniqueIndex(src, f):
+	return map(dl(f),src,)
+
+def iuniqueIndex(src, f):
+	return imap(dl(f),src,)
+
+dl = lambda f: lambda x: [x, f(x)]
+
+
+
+#def storeTo(mappings):
+#	mappings.append(yield)
+
+#deprecated
 def init_coroutine(cr):
-	def __inner__(arg* , kwarg**):
-		self_ = arg[0]
-		x=cr(self)
-		x.send(None)
+	def __inner__(*arg , **kwarg):
 		
-		yield
-		yield x(yield)
+		self_ = arg[0]
+		if getattr(self_,'cr_',None) is None:
+			self_.cr_=cr(self)
+			self_.cr_.send(None)
+			#self_.cr_= a.cr_.send
+		
+		
+		while True:
+			self_, arg = yield
+			yield self.cr_(arg)
 
-	__inner__.__doc__ = x.__doc__
+	__inner__.__doc__ = cr.__doc__
 		
 	inner=__inner__()
 	inner.send(None)
 	
 	
-	return inner
+	return __inner__
 
 
 
@@ -75,7 +99,10 @@ class hist_data():
 	def __str__(self,):
 		return unicode(self,)
 	def __unicode__(self,):
-		return '<' + str(self.__class__) + (self.name or ' ? ') + (self.data or '') + '>'
+		#~ print self.data
+		data = ''
+		if None != self.data: data = str(self.data)
+		return '<' + str(self.__class__) + (self.name or ' ? ') + (data) + '>'
 	pass
 
 class percent(hist_data):
@@ -104,7 +131,7 @@ def get_all_tick(file, ):
 			if not t in ticks:
 				ticks.append(t)
 	return ticks
-	
+		
 def present(dr, tick = datetime.datetime(1998,02,03)):
 	''' present(dr, tick) -> presence of ticker in dr, where dr is csv historical data, presence is object with start_date optional date (dafaults to datetime.datetime(1998,02,03)) )'''
 
@@ -115,40 +142,45 @@ class presence():
 		self.current_date = start_date
 		self.from_ = 0
 		self.to = -1
-		init_coroutines
 	
-	@init_coroutine
 	def next_day(self,):
-		yield
 		while True:
 			day = yield 
 			if day:
-				self.i = self.i +1
-				self.current_date = self.current_date + datetime.timedalta(1)
-				self.to = self.i
+				#self.i = self.i +1
+				self.current_date = self.current_date + datetime.timedelta(1)
+				#self.to = self.i
 	
-	@init_coroutine
 	def got_cotir(self, ):
 		while True:
 			t = yield
 			if t:
 				if not self.from_:
-					self.from_ = self.i
-
+					self.from_ = self.current_date
+				self.to = self.current_date
+				
+def get_col_name(dr, nm = 'TICKER'):
+	#print dir(dr)
+	#print dr.__iter__().next().keys()
+	return 'TICKER'
+	
 
 def open_csv_kotir(file, tick = None):
 	if tick:
 		with open(file) as raw_csv:
 			dr = csv.DictReader(raw_csv,dialect = excel)
-			tick = None
-			arr = [[float(line['<OPEN>']),float(line['<HIGH>']),float(line['<LOW>']),float(line['<CLOSE>'])] for line in dr if line['<TICKER>'] == tick]
-			present = [line['<TICKER>'] == tick for line in dr]
+			col = get_col_name(dr)
+			print dr.__iter__().next()
+			#tick = None
+			arr = [[float(line['OPEN']),float(line['HIGH']),float(line['LOW']),float(line['CLOSE'])] for line in dr if line['TICKER'] == tick]
+			#present = [line['TICKER'] == tick for line in dr]
 			
-			start = present.index(1)
+			#start = present.index(1)
 			#present =  Present()
-			end = len(present) + start
+			#end = len(present) + start
 			
 			lenth = len(arr)
+			
 			arr = np.array(arr)
 		return hist_data(arr, tick, lenth)
 
@@ -170,6 +202,7 @@ def open_all_files(files):
 
 def open_all_ticks(file_with_all, ticks):
 	all_kotir = [open_csv_kotir(file_with_all, tick) for tick in ticks]
+	return all_kotir
 
 def determine_percent(hist):
 	''' determine_percent(arr) -> np.array() with shape (n-1,) where n is length of initial array and elements are percent delta to previous day'''
@@ -209,7 +242,7 @@ def matrixmin(mx, n = 1):
 def get_range_with_full_tickers():
 	all_kotir = open_al_csv_kotir()
 
-if __name__ == '__main__':
+if __name__ == '__main__old__':
 	import sys
 	if len(sys.argv)==2 and sys.argv[1] == '-t':
 		for i in get_all_tick(file_with_all):
@@ -229,3 +262,40 @@ if __name__ == '__main__':
 		
 # результат ARMD, HYDR
 # из древних AVAZ, SCOH
+
+def filter(next = gsingleton(print__)):
+	prev = None
+	while True:
+		x = yield
+		y = yield
+		if isinstance(x, float):
+			x,y = y,x
+		if isinstance(y, float):
+			next.send(x )
+			
+def indicator(next = gsingleton(print__)):
+	prev = None
+	while True:
+		x = yield
+		if prev:
+			if x/prev > 1.1:
+				next.send(x/prev -1 )
+		prev = x
+
+
+
+def interactive(next = gsingleton(print__)):
+	print ' getting EESR ticks printed '
+	for t in open_all_ticks(file_with_all,['EESR']):
+		#~ print 'inside'
+		for d in t.data:
+			next.send( d ) 
+ 
+
+if __name__ == '__main__':
+	# interactive use
+	#~ print 'outside'
+	interactive()
+
+
+
