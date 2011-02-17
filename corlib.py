@@ -41,7 +41,7 @@ def wc(next = gsingleton(print__)):
 # хотя передача графов с циклами это нетипичный случай
 # большинство корутин модет не заботиться о циклах в графе
 
-def greps(expression, next = gsingleton(print__))
+def greps(expression, next = gsingleton(print__)):
 	while True:
 		try:
 			x = yield

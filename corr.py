@@ -33,31 +33,6 @@ dl = lambda f: lambda x: [x, f(x)]
 #def storeTo(mappings):
 #	mappings.append(yield)
 
-#deprecated
-def init_coroutine(cr):
-	def __inner__(*arg , **kwarg):
-		
-		self_ = arg[0]
-		if getattr(self_,'cr_',None) is None:
-			self_.cr_=cr(self)
-			self_.cr_.send(None)
-			#self_.cr_= a.cr_.send
-		
-		
-		while True:
-			self_, arg = yield
-			yield self.cr_(arg)
-
-	__inner__.__doc__ = cr.__doc__
-		
-	inner=__inner__()
-	inner.send(None)
-	
-	
-	return __inner__
-
-
-
 files_csv = '''/home/hamilyon/Downloads/HYDR_991001_101121.txt
 /home/hamilyon/Downloads/SNGS_991001_101121.txt
 /home/hamilyon/Downloads/SBER_991001_101121.txt
@@ -83,14 +58,14 @@ files_csv = '''/home/hamilyon/Downloads/SNGS_991001_101121.txt
 /home/hamilyon/Downloads/MSNG_991001_101121.txt
 /home/hamilyon/Downloads/GAZP_991001_101121.txt'''
 
-
-
 files_csv = files_csv.split()
 
 file_with_all = 'ALL_TICKERS.csv'
 
 with open('ticks') as f:
 	ticks = f.read().split()
+
+ticks = ['EESR',]
 
 class hist_data():
 	def __init__(self, data = None, name = None, lenth = None, start_date = None, end_date = None):
@@ -122,16 +97,6 @@ class excel(csv.Dialect):
     lineterminator = '\r\n'
     quoting = csv.QUOTE_MINIMAL
 
-def get_all_tick(file, ):
-	with open(file) as raw_csv:
-		dr = csv.DictReader(raw_csv,dialect = excel)
-		ticks = []
-		for line in dr:
-			t = line['TICKER']
-			if not t in ticks:
-				ticks.append(t)
-	return ticks
-		
 def present(dr, tick = datetime.datetime(1998,02,03)):
 	''' present(dr, tick) -> presence of ticker in dr, where dr is csv historical data, presence is object with start_date optional date (dafaults to datetime.datetime(1998,02,03)) )'''
 
@@ -164,15 +129,20 @@ def get_col_name(dr, nm = 'TICKER'):
 	#print dr.__iter__().next().keys()
 	return 'TICKER'
 	
-
+def float_or_zero(string):
+	try: 
+		return float(string)
+	except ValueError, e:
+		return 0
 def open_csv_kotir(file, tick = None):
 	if tick:
 		with open(file) as raw_csv:
 			dr = csv.DictReader(raw_csv,dialect = excel)
 			col = get_col_name(dr)
-			print dr.__iter__().next()
+			print tick
+			#print dr.__iter__().next()
 			#tick = None
-			arr = [[float(line['OPEN']),float(line['HIGH']),float(line['LOW']),float(line['CLOSE'])] for line in dr if line['TICKER'] == tick]
+			arr = [[float_or_zero(line['OPEN']),float_or_zero(line['HIGH']),float_or_zero(line['LOW']),float_or_zero(line['CLOSE'])] for line in dr if line['TICKER'] == tick]
 			#present = [line['TICKER'] == tick for line in dr]
 			
 			#start = present.index(1)
@@ -242,16 +212,21 @@ def matrixmin(mx, n = 1):
 def get_range_with_full_tickers():
 	all_kotir = open_al_csv_kotir()
 
-if __name__ == '__main__old__':
+if __name__ == '__main__':
 	import sys
 	if len(sys.argv)==2 and sys.argv[1] == '-t':
 		for i in get_all_tick(file_with_all):
 			print i
 	elif len(sys.argv)==2 and sys.argv[1] == '-r':
 		print get_range_with_full_tickers()
+	elif len(sys.argv)==2 and sys.argv[1] == '-p':   
+		hist_kotir = open_all_ticks(file_with_all,ticks)
+		import pickle
+		[pickle.dump(x,open('./pdata/'+x.name,'w')) for x in hist_kotir]
 	else:
+		
 		hist_kotir = open_all_files(files_csv)
-		hist_kotir = open_all_ticks()
+		hist_kotir = open_all_ticks(file_with_all,ticks)
 		#determine_percent(all_kotir[0])
 		crln = correlation(hist_kotir)
 		#pprint.pprint( crln )
@@ -262,40 +237,4 @@ if __name__ == '__main__old__':
 		
 # результат ARMD, HYDR
 # из древних AVAZ, SCOH
-
-def filter(next = gsingleton(print__)):
-	prev = None
-	while True:
-		x = yield
-		y = yield
-		if isinstance(x, float):
-			x,y = y,x
-		if isinstance(y, float):
-			next.send(x )
-			
-def indicator(next = gsingleton(print__)):
-	prev = None
-	while True:
-		x = yield
-		if prev:
-			if x/prev > 1.1:
-				next.send(x/prev -1 )
-		prev = x
-
-
-
-def interactive(next = gsingleton(print__)):
-	print ' getting EESR ticks printed '
-	for t in open_all_ticks(file_with_all,ticks):
-		#~ print 'inside'
-		for d in t.data:
-			next.send( d ) 
-			
-
-if __name__ == '__main__':
-	# interactive use
-	#~ print 'outside'
-	interactive()
-
-
 
