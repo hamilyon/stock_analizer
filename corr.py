@@ -286,11 +286,11 @@ def indicator(next = gsingleton(print__)):
 
 def interactive(next = gsingleton(print__)):
 	print ' getting EESR ticks printed '
-	for t in open_all_ticks(file_with_all,['EESR']):
+	for t in open_all_ticks(file_with_all,ticks):
 		#~ print 'inside'
 		for d in t.data:
 			next.send( d ) 
- 
+			
 
 if __name__ == '__main__':
 	# interactive use
