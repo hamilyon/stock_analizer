@@ -1,0 +1,7 @@
+for 0.4.0
+StorageProvider which store data in a database (SQL)
+Change parent of FinamProvider to a StorageProvider. Chage kind of caching.
+Use standart csv module inside CSVProvider.
+
+for 0.3.0
+MOMENTUM(+ROC) indicator
