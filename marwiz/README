@@ -1,0 +1,58 @@
+MarketWizard - Toolkit for Traders and Investors written in Python
+
+What is MarketWizard?
+-----------------------------------------------------------------------------
+MarketWizard is a set of libraries and tools for the development, testing, and
+execution of automated trading systems and creating trading tools for manual trading.
+The main web site for the toolkit is here:
+    
+    http://marketwizard.algomarkets.ru/
+       
+Where can I get MarketWizard?
+-----------------------------------------------------------------------------
+You can clone original Mercurial repository from here:
+
+    http://bitbucket.org/deniskolodin/marketwizard
+
+What are the requirements?
+-----------------------------------------------------------------------------
+HGLib requires the following packages.  Newer versions may (or may not!) 
+be substituted:
+
+  * Python 2.7
+    http://www.python.org/
+
+What is Python?
+-----------------------------------------------------------------------------
+From the "What is Python?" page (http://python.org/doc/Summary.html):
+
+Python is an interpreted, interactive, object-oriented programming language. 
+It is often compared to Tcl, Perl, Scheme or Java.
+
+Python combines remarkable power with very clear syntax. It has modules, 
+classes, exceptions, very high level dynamic data types, and dynamic typing.  
+There are interfaces to many system calls and libraries, as well as to various
+windowing systems (X11, Motif, Tk, Mac, MFC). New built-in modules are easily 
+written in C or C++. Python is also usable as an extension language for 
+applications that need a programmable interface.
+
+The Python implementation is portable: it runs on many brands of UNIX, on 
+Windows, DOS, OS/2, Mac, Amiga... If your favorite system isn't listed here, 
+it may still be supported, if there's a C compiler for it. Ask around on 
+comp.lang.python -- or just try compiling Python yourself.
+
+The Python implementation is copyrighted but freely usable and distributable, 
+even for commercial use.
+
+What else?
+-----------------------------------------------------------------------------
+HGLib is Free Software and is concordantly licensed under the BSD. Refer 
+to the LICENSE file in the distribution for more information.
+
+Thank you!
+-----------------------------------------------------------------------------
+Thank you, for I am very interested in your experience with MarketWizard.  
+Please drop me an note with any feedback you have.
+
+Denis Kolodin
+mailto:DenisKolodin@gmail.com

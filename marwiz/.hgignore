@@ -1,0 +1,5 @@
+glob:*.pyc
+relre:MANIFEST
+glob:build/
+glob:dist/
+glob:*.pyo
