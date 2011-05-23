@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+# --* encoding:utf8  *--
+# -----------------------------------------------------------------------------
+# corr.py
+# -----------------------------------------------------------------------------
+import datetime
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import random
+import os.path
+import numpy as np
+import csv
+import pprint
+from matplotlib import rc
+
+files_csv = '''/home/hamilyon/Downloads/HYDR_991001_101121.txt
+/home/hamilyon/Downloads/SNGS_991001_101121.txt
+/home/hamilyon/Downloads/SBER_991001_101121.txt
+/home/hamilyon/Downloads/MTLR_991001_101121.txt
+/home/hamilyon/Downloads/LKOH_991001_101121.txt
+/home/hamilyon/Downloads/GAZP_991001_101121(2).txt
+/home/hamilyon/Downloads/VTBR_991001_101121.txt
+/home/hamilyon/Downloads/AFLT_991001_101121.txt
+/home/hamilyon/Downloads/AVAZ_991001_101121.txt
+/home/hamilyon/Downloads/ARMD_991001_101121.txt
+/home/hamilyon/Downloads/SCOH_991001_101121.txt
+/home/hamilyon/Downloads/MSNG_991001_101121.txt
+/home/hamilyon/Downloads/GAZP_991001_101121.txt'''
+
+files_csv = '''/home/hamilyon/Downloads/SNGS_991001_101121.txt
+/home/hamilyon/Downloads/SBER_991001_101121.txt
+/home/hamilyon/Downloads/LKOH_991001_101121.txt
+/home/hamilyon/Downloads/GAZP_991001_101121(2).txt
+/home/hamilyon/Downloads/VTBR_991001_101121.txt
+/home/hamilyon/Downloads/AFLT_991001_101121.txt
+/home/hamilyon/Downloads/AVAZ_991001_101121.txt
+/home/hamilyon/Downloads/SCOH_991001_101121.txt
+/home/hamilyon/Downloads/MSNG_991001_101121.txt
+/home/hamilyon/Downloads/GAZP_991001_101121.txt'''
+
+
+
+files_csv = files_csv.split()
+
+class hist_data():
+	def __init__(self, data = None, name = None, lenth = None):
+		(self.data, self.name, self.lenth) = data, name, lenth
+		pass
+	def __str__(self,):
+		return unicode(self,)
+	def __unicode__(self,):
+		return '<' + str(self.__class__) + (self.name or ' ? ') + (self.data or '') + '>'
+	pass
+
+class percent(hist_data):
+	def __str__(self):
+		return super.__str__(self)
+		
+	def __unicode__(self):
+		return super.__unicode__(self)
+	pass
+
+def open_csv_kotir(file, tick = None):
+	class excel(csv.Dialect):
+	    delimiter = ','
+	    quotechar = '"'
+	    escapechar = None
+	    doublequote = True
+	    skipinitialspace = False
+	    lineterminator = '\r\n'
+	    quoting = csv.QUOTE_MINIMAL
+
+	if tick:
+		with open(file) as raw_csv:
+			dr = csv.DictReader(raw_csv,dialect = excel)
+			tick = None
+			arr = [[float(line['<OPEN>']),float(line['<HIGH>']),float(line['<LOW>']),float(line['<CLOSE>'])] for line in dr if line['<TICKER>'] == tick]
+			lenth = len(arr)
+			arr = np.array(arr)
+		return hist_data(arr, tick, lenth)
+
+	#tick = file[25:29] 
+	with open(file) as raw_csv:
+		dr = csv.DictReader(raw_csv,dialect = excel)
+		tick = None
+		for line in dr:
+			tick = tick or line['<TICKER>']
+			#print tick
+			break
+		arr = [[float(line['<OPEN>']),float(line['<HIGH>']),float(line['<LOW>']),float(line['<CLOSE>'])] for line in dr]
+		arr = np.array(arr)
+	return hist_data(arr, tick)
+
+def open_all_files(files):
+	all_kotir = [open_csv_kotir(file) for file in files]
+	return all_kotir
+
+def open_all_ticks
+
+def determine_percent(hist):
+	''' determine_percent(arr) -> np.array() with shape (n-1,) where n is length of initial array and elements are percent delta to previous day'''
+	arr = hist.data
+	arr_2 = np.copy(arr)
+	#print arr[:,3]
+	d =  (arr[1:,3] - arr[:-1,3])/arr[:-1,3]  # np.array((0,0,0,0)))
+	#print hist.name, d
+	pc = percent()
+	pc.name = hist.name
+	pc.data = d
+	return pc
+	
+def determine_all_percent(hist_kotir):
+	return [determine_percent(hist_kotir) for hist_kotir in hist_kotir  ]
+	
+def correlation(hist_kotir):
+	pc = determine_all_percent(hist_kotir)
+	print [p.data.shape for p in pc]
+	# sum() is add.reduce()
+	trim = min([p.data.shape for p in pc])[0]
+	#i = pc.__iter__()
+	#p1 = i.next()
+	#p2 = i.next()
+	#print 'shape1', p1.data[-460:].shape
+	#print 'shape2', p2.data[-460:].shape
+	#x = sum(p1.data[:-460]*p2.data[:-460]) 
+	return [ [  sum(p1.data[-trim :]*p2.data[-trim :])  for p2 in pc ] for p1 in pc ]
+	
+	
+def matrixmin(mx, n = 1):
+	if n!= 1:
+		raise Exception('Not implemented jet')
+	print np.array(mx).argmin(1)
+	return np.array(mx).argmin(0)
+	
+	
+
+if __name__ == '__main__':
+	hist_kotir = open_all_files(files_csv)
+	#determine_percent(all_kotir[0])
+	crln = correlation(hist_kotir)
+	#pprint.pprint( crln )
+	print matrixmin(crln)
+	
+	
+	pprint.pprint( [kotir.name for kotir in hist_kotir] )
+		
+# результат ARMD, HYDR
+# из древних AVAZ, SCOH

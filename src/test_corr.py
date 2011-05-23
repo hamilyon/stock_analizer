@@ -47,12 +47,33 @@ class testUIndex(unittest.TestCase):
 	def testuitrivial(self,):
 		assert [['s', 'S'], ['t', 'T'], ['l', 'L']] == uniqueIndex( 'stl', str.upper,)
 		
-class testKotirIndexConstructsunittest.TestCase):
+class testKotirIndexConstructs(unittest.TestCase):
 	def setUp(self,):
 		pass
-	def testiuok(self,):
+	def _testiuok(self,):
 		
 		assert len(uniqueIndex())
+
+class testCorrOk(unittest.TestCase):
+	def setUp(self,):
+		pass
+	def testCorrelationFunctionWorks(self,):
+		n = correlate([],[]); self.assertTrue(n!=n)
+		self.assertEqual(correlate([1.0],[1]), 1)
+		self.assertEqual(correlate([1.0,0],[0,1]), 0)
+		self.assertEqual(correlate([1.0,2,3],[3,2,1]), 10.0/(14*14))
+		
+		
+	def ignoreItTestCorrIgnoresNone(self,):
+		self.assertEqual(correlate([None,None,None],[3,None,1]), 0)
+		self.assertEqual(correlate([None,2,None],[3,None,1]), 0)
+		self.assertEqual(correlate([1,2,None],[3,None,1]), 3/(1*3))
+		
+	def testDiffererntLengthsCorrelate(self,):
+		early = hist_data([1,2,2,2,2,2,2,2,2], start_date = datetime.datetime(2000,1,1))
+		late = hist_data([2,2,2,2,2,2,2,2], start_date = datetime.datetime(2000,1,2))
+		self.assertEqual(correlate(early,late), 1)
+		
 		
 if __name__ == '__main__':
 	unittest.main()

@@ -62,7 +62,7 @@ files_csv = files_csv.split()
 
 file_with_all = 'ALL_TICKERS.csv'
 
-with open('ticks') as f:
+with open('resource/ticks') as f:
 	ticks = f.read().split()
 
 ticks = ['EESR',]
@@ -70,6 +70,7 @@ ticks = ['EESR',]
 class hist_data():
 	def __init__(self, data = None, name = None, lenth = None, start_date = None, end_date = None):
 		(self.data, self.name, self.lenth, self.start_date, self.end_date, ) = data, name, lenth, start_date, end_date
+		tick = datetime.timedelta(1)
 		pass
 	def __str__(self,):
 		return unicode(self,)
@@ -212,6 +213,21 @@ def matrixmin(mx, n = 1):
 def get_range_with_full_tickers():
 	all_kotir = open_al_csv_kotir()
 
+def xor(a,b):
+	return (a and b) or (not a and not b)
+
+def normalize(a,b):
+	drift = (a.start_date - b.start_date).days
+	return 
+
+def correlate(a,b):
+	
+	if xor(hasattr(a,'data'), hasattr(b,'data')):
+		raise ValueError()
+	if hasattr(a,'data'): 
+		a,b = normalize(a,b)
+	return np.dot(a,b)/(np.dot(a,a)*np.dot(b,b))
+
 if __name__ == '__main__':
 	import sys
 	if len(sys.argv)==2 and sys.argv[1] == '-t':
@@ -223,6 +239,12 @@ if __name__ == '__main__':
 		hist_kotir = open_all_ticks(file_with_all,ticks)
 		import pickle
 		[pickle.dump(x,open('./pdata/'+x.name,'w')) for x in hist_kotir]
+	elif len(sys.argv)==2 and sys.argv[1] == '-db':   
+		hist_kotir = open_all_ticks(file_with_all,ticks)
+		db = connect('./pdata/database')
+		[db.execute() for x in hist_kotir]
+		[pickle.dump(x,open('./pdata/'+x.name,'w')) for x in hist_kotir]
+		
 	else:
 		
 		hist_kotir = open_all_files(files_csv)
